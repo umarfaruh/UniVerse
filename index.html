@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>UniVerse - Поиск университетов</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: #6366f1;
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #666;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #6366f1;
+    }
+
+    .profile-btn {
+      padding: 10px 20px;
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .profile-btn:hover {
+      background-color: #4f46e5;
+    }
+
+    .header-right {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+    }
+
+    .search-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .search-box {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 40px;
+    }
+
+    .search-box input {
+      flex: 1;
+      padding: 12px 16px;
+      border: 2px solid #e5e7eb;
+      border-radius: 8px;
+      font-size: 16px;
+      transition: border-color 0.3s;
+    }
+
+    .search-box input:focus {
+      outline: none;
+      border-color: #6366f1;
+    }
+
+    .search-box button {
+      padding: 12px 24px;
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background-color 0.3s;
+    }
+
+    .search-box button:hover {
+      background-color: #4f46e5;
+    }
+
+    .universities-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 0 20px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card:hover {
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+      transform: translateY(-5px);
+    }
+
+    .card a {
+      text-decoration: none;
+      color: inherit;
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+    }
+
+    .card img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111;
+      padding: 16px 16px 8px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #666;
+      padding: 0 16px 16px;
+      flex-grow: 1;
+      line-height: 1.5;
+    }
+
+    footer {
+      background-color: #f3f4f6;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 60px;
+      color: #999;
+      font-size: 14px;
+    }
+
+    @media (max-width: 768px) {
+      .universities-grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        gap: 15px;
+      }
+
+      .header-container {
+        flex-direction: column;
+        gap: 15px;
+      }
+    }
+
+    .card h3 {
+      font-size: 18px;
+      font-weight: 700;
+      margin-bottom: 12px;
+      color: #111827;
+    }
+
+    .card p {
+      font-size: 14px;
+      line-height: 1.6;
+      color: #6b7280;
+      margin: 0;
+    }
+
+    footer {
+      background: #111827;
+      color: #cbd5e1;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 60px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo">UniVerse</div>
+      <div class="header-right">
+        <nav>
+          <a href="index2.html">Главная</a>
+          <a href="index.html">Университеты</a>
+          <a href="obshaga/obshaga.html">Общежития</a>
+          <a href="/info.html">О нас</a>
+        </nav>
+        <a href="profile.html" class="profile-btn">👤 Профиль</a>
+      </div>
+    </div>
+  </header>
+
+  <div class="search-container">
+    <div class="search-box">
+      <input 
+        type="text" 
+        id="countryInput" 
+        placeholder="Поиск по странам..."
+        list="countries">
+      <datalist id="countries">
+        <option value="Казахстан">
+        <option value="США">
+        <option value="Великобритания">
+      </datalist>
+      <button onclick="searchUniversities()">Найти</button>
+    </div>
+  </div>
+
+  <div class="universities-grid">
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/kaznu.html">
+        <img src="https://farabi.university/images/default_news.png" alt="КазНУ">
+        <h3>КазНУ имени Аль-Фараби</h3>
+        <p>Один из крупнейших и старейших университетов Казахстана, расположен в Алматы и считается ведущим многопрофильным высшим учебным заведением страны.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/Civil_Aviation_Academy.html">
+        <img src="https://kolledj.kz/wp-content/uploads/2021/02/Aviatsionnyj-kolledzh-AO-Akademiya-Grazhdanskoj-aviatsii-AGA.jpg" alt="Академия гражданской авиации">
+        <h3>Академия гражданской авиации</h3>
+        <p>Высшее учебное заведение, специализирующееся на подготовке авиационных специалистов. Основана в 1995 году и является одним из ключевых образовательных центров авиационной отрасли.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Astana/enu.html">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/L.N.Gumilyov_Eurasian_National_University.JPG" alt="ЕНУ">
+        <h3>Евразийский национальный университет</h3>
+        <p>Один из крупнейших университетов Казахстана, расположенный в столице стран городе Астана. Основан в 1991 году и является ведущим многопрофильным учебным заведением.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/almau.html">
+        <img src="https://almau.edu.kz/wp-content/uploads/2025/01/IMG_5614-scaled-2.jpg" alt="AlmaU">
+        <h3>Almaty Management University</h3>
+        <p>Крупный частный университет в Алматы. Один из старейших частных вузов страны с более чем 35-летней историей на рынке образования и первой бизнес-школой Республики Казахстан.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/kaynar.html">
+        <img src="https://avatars.mds.yandex.net/get-altay/4719974/2a0000017944cd0b4a3ba6b23ce3aaf47d8a/L_height" alt="Академия Кайнар">
+        <h3>Академия "Кайнар"</h3>
+        <p>Частное высшее учебное заведение в Алматы. Была основана в 1991 году и преобразована в академию в 2014 году.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/gumaniter.html">
+        <img src="https://avatars.mds.yandex.net/get-altay/9753788/2a0000018a1a6793e80bcf1551159de35da0/orig" alt="АГЭУ">
+        <h3>Алматинский гуманитарно-экономический университет</h3>
+        <p>Высшее учебное заведение, расположенное в Алматы. Создан в 2021 году путём объединения Алматинской академии экономики и статистики и Университета «Алматы».</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/aty.html">
+        <img src="https://avatars.mds.yandex.net/get-altay/911432/2a0000018ed179e9f3fae46939fafe19bbd8/orig" alt="АТУ">
+        <h3>Алматинский технологический университет</h3>
+        <p>Крупное высшее учебное заведение в Алматы. Основан в 1957 году и стал одним из ведущих университетов в Казахстане по подготовке специалистов для различных отраслей.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/DMU Kazakhstan.html">
+        <img src="https://primeminister.kz/assets/media/photo-2021-11-03-18-46-17.jpg" alt="DMU Kazakhstan">
+        <h3>De Montfort University Kazakhstan</h3>
+        <p>Первый британский университетский кампус в Казахстане, основан в 2021 году. Студенты получают британский диплом De Montfort University Leicester.</p>
+      </a>
+    </div>
+
+    <div class="card">
+      <a href="/univer/kazakhstan/Almaty/ety.html">
+        <img src="https://avatars.mds.yandex.net/i?id=0a8649e48c0a625b2d8eedfa1a995527c701d70e-10158740-images-thumbs&n=13" alt="ЕТУ">
+        <h3>Евразийский технологический университет</h3>
+        <p>Частный высший учебный университет в Алматы. Готовит специалистов для современной экономики, придерживается принципов Болонского процесса и международных стандартов.</p>
+      </a>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 UniVerse — Платформа поиска университетов. Все права защищены.
+  </footer>
+
+  <script>
+    function searchUniversities() {
+      const country = document.getElementById("countryInput").value.toLowerCase().trim();
+
+      if (!country) {
+        alert("Пожалуйста, введите название страны или университета");
+        return;
+      }
+
+      if (country.includes("казах")) {
+        window.location.href = "/univer/kazakhstan/kazakstan.html";
+      } 
+      else if (country.includes("сша") || country.includes("америк")) {
+        window.location.href = "/univer/UST/USA.html";
+      } 
+      else if (country.includes("велико")) {
+        window.location.href = "/univer/uk.html";
+      } 
+      else {
+        alert("Страна или университет не найден. Попробуйте: Казахстан, США или Великобритания");
+      }
+    }
+
+    // Поиск при нажатии Enter
+    document.getElementById("countryInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        searchUniversities();
+      }
+    });
+  </script>
+
+</body>
+</html>
+      <button type="button" onclick="searchUniversities()">Найти</button>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="universities-grid">
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/kaznu.html">
+          <img src="https://farabi.university/images/default_news.png" alt="КазНУ им. аль-Фараби">
+          <div class="card-content">
+            <h3>КазНУ им. аль-Фараби</h3>
+            <p>Крупнейший и старейший университет Казахстана, расположен в Алматы. Один из ведущих многопрофильных вузов страны, основан в 1933-1934 годах.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/Civil_Aviation_Academy.html">
+          <img src="https://kolledj.kz/wp-content/uploads/2021/02/Aviatsionnyj-kolledzh-AO-Akademiya-Grazhdanskoj-aviatsii-AGA.jpg" alt="Академия гражданской авиации">
+          <div class="card-content">
+            <h3>Академия гражданской авиации</h3>
+            <p>ВУЗ, специализирующийся на подготовке авиационных специалистов. Основана в 1995 году, является ключевым образовательным центром авиационной отрасли Центральной Азии.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Astana/enu.html">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/L.N.Gumilyov_Eurasian_National_University.JPG" alt="ЕНУ им. Л.Н. Гумилева">
+          <div class="card-content">
+            <h3>ЕНУ им. Л.Н. Гумилева</h3>
+            <p>Один из крупнейших университетов Казахстана, расположен в столице стране, городе Астане. Основан в 1991 году.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/almau.html">
+          <img src="https://almau.edu.kz/wp-content/uploads/2025/01/IMG_5614-scaled-2.jpg" alt="AlmaU">
+          <div class="card-content">
+            <h3>Almaty Management University</h3>
+            <p>Крупный частный университет в Алматы. Один из старейших частных вузов страны с более чем 35-летней историей на рынке образования.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/kaynar.html">
+          <img src="https://avatars.mds.yandex.net/get-altay/4719974/2a0000017944cd0b4a3ba6b23ce3aaf47d8a/L_height" alt="Академия Кайнар">
+          <div class="card-content">
+            <h3>Академия "Кайнар"</h3>
+            <p>Частное высшее учебное заведение в Алматы. Правопреемник университета "Кайнар", основанного в 1991 году и преобразованного в академию в 2014 году.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/gumaniter.html">
+          <img src="https://avatars.mds.yandex.net/get-altay/9753788/2a0000018a1a6793e80bcf1551159de35da0/orig" alt="АГЭУ">
+          <div class="card-content">
+            <h3>АГЭУ</h3>
+            <p>Алматинский гуманитарно-экономический университет. Создан в 2021 году путем объединения Алматинской академии экономики и статистики и Университета "Алматы".</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/aty.html">
+          <img src="https://avatars.mds.yandex.net/get-altay/911432/2a0000018ed179e9f3fae46939fafe19bbd8/orig" alt="АТУ">
+          <div class="card-content">
+            <h3>Алматинский технологический университет</h3>
+            <p>Крупное высшее учебное заведение в Алматы. Основан в 1957 году, один из ведущих университетов Центральной Азии по подготовке специалистов.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/DMU Kazakhstan.html">
+          <img src="https://primeminister.kz/assets/media/photo-2021-11-03-18-46-17.jpg" alt="DMU Kazakhstan">
+          <div class="card-content">
+            <h3>De Montfort University Kazakhstan</h3>
+            <p>Первый британский университетский кампус в Казахстане, основан в 2021 году. При окончании студенты получают британский диплом De Montfort University Leicester.</p>
+          </div>
+        </a>
+      </div>
+
+      <div class="card">
+        <a href="/univer/kazakhstan/Almaty/ety.html">
+          <img src="https://avatars.mds.yandex.net/i?id=0a8649e48c0a625b2d8eedfa1a995527c701d70e-10158740-images-thumbs&n=13" alt="ЕТУ">
+          <div class="card-content">
+            <h3>Евразийский технологический университет</h3>
+            <p>Частный высший учебный университет в Алматы. Готовит специалистов для современной экономики, придерживается принципов Болонского процесса.</p>
+          </div>
+        </a>
+      </div>
+
+    </div>
+  </div>
+
+  <footer>
+    © 2026 UniVerse — Платформа поиска университетов
+  </footer>
+
+  <script>
+    function searchUniversities() {
+      const country = document.getElementById("countryInput").value.toLowerCase().trim();
+
+      if (!country) {
+        alert("Пожалуйста, введите название страны или университета");
+        return;
+      }
+
+      if (country.includes("казах")) {
+        window.location.href = "/univer/kazakhstan/kazakstan.html";
+      } 
+      else if (country.includes("сша") || country.includes("америк")) {
+        window.location.href = "/univer/UST/USA.html";
+      } 
+      else if (country.includes("велико")) {
+        window.location.href = "/univer/uk.html";
+      } 
+      else {
+        alert("Страна или университет не найден. Попробуйте: Казахстан, США или Великобритания");
+      }
+    }
+
+    // Поиск при нажатии Enter
+    document.getElementById("countryInput").addEventListener("keypress", function(e) {
+      if (e.key === "Enter") {
+        searchUniversities();
+      }
+    });
+  </script>
+
+</body>
+</html>
+
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/kaznu.html">
+  <img src="https://farabi.university/images/default_news.png" style="width:300px; height:auto;">
+  <h3 style="width: 30%;">Kaznu г.Алматы</h3>
+  <p style="margin-left: -235px; margin-top: 40px;">Al-Farabi Kazakh National University — один из крупнейших и старейших университетов Казахстана,
+  расположен в Алматы и назван в честь выдающегося философа и учёного Абу Насра аль-Фараби. 
+  Он был основан в 1933–1934 годах и считается ведущим многопрофильным высшим учебным заведением страны.</p>
+</a></div>
+<div class="card"><a href="/univer/kazakhstan/Almaty/Civil_Aviation_Academy.html">
+  <img src="https://kolledj.kz/wp-content/uploads/2021/02/Aviatsionnyj-kolledzh-AO-Akademiya-Grazhdanskoj-aviatsii-AGA.jpg" style="width:300px; height:auto;">
+  <h3 style="width: 100%; height: 70%;">Академия гражданской авиации г.Алматы</h3>
+  <p style="margin-left: -690px; margin-top: 40px;">Академия гражданской авиации (г. Алматы, Республика Казахстан) — высшее учебное заведение, 
+  специализирующееся на подготовке авиационных специалистов для гражданской авиации. 
+  Она была основана в 1995 году и является одним из ключевых образовательных центров в авиационной отрасли Казахстана и Центральной Азии.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Astana/enu.html">
+  <img src="https://upload.wikimedia.org/wikipedia/commons/f/f8/L.N.Gumilyov_Eurasian_National_University.JPG" style="width:300px; height:auto;">
+  <h3 style="width: 30%;">ENU г.Астана</h3>
+  <p style="margin-left: -295px; margin-top: 40px;">Евразийский национальный университет (ENU) — один из крупнейших университетов Казахстана, 
+  расположенный в столице страны, городе Астане. Он был основан в 1991 году и является ведущим многопрофильным учебным заведением страны.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/almau.html">
+  <img src="https://almau.edu.kz/wp-content/uploads/2025/01/IMG_5614-scaled-2.jpg" style="width:300px; height:auto;">
+  <h3 style="width: 30%;">AlmaU г.Алматы</h3>
+  <p style="margin-left: -240px; margin-top: 40px;">Almaty Management University (AlmaU) — крупный частный университет в Алматы, Казахстан, также известный как Алматы Менеджмент Университет. Это один из старейших частных вузов страны с более чем 35-летней историей на рынке образования и первой бизнес-школой Республики Казахстан.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/kaynar.html">
+  <img src="https://avatars.mds.yandex.net/get-altay/4719974/2a0000017944cd0b4a3ba6b23ce3aaf47d8a/L_height" style="width:300px; height:auto;">
+  <h3 style="width: 30%;">Академия "Кайнар"</h3>
+  <p style="margin-left: -285px; margin-top: 40px;">Академия «Кайнар» — частное высшее учебное заведение, базирующееся в г. Алматы, Казахстан. Это учреждение образования является правопреемником университета «Кайнар», который был основан в 1991 году и преобразован в академию в 2014 году.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/gumaniter.html">
+  <img src="https://avatars.mds.yandex.net/get-altay/9753788/2a0000018a1a6793e80bcf1551159de35da0/orig" style="width:300px; height:auto;">
+  <h3 style="width: 100%;">Алматинский гуманитарно-экономический университет"АГЭУ"</h3>
+  <p style="margin-left: -640px; margin-top: 70px;"> Алматинский гуманитарно-экономический университет (АГЭУ) — высшее учебное заведение, расположенное в Алматы, Республика Казахстан. Он был создан в сентябре 2021 года путём объединения Алматинской академии экономики и статистики и Университета «Алматы» и действует на основе государственной лицензии на образовательную деятельность.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/aty.html">
+  <img src="https://avatars.mds.yandex.net/get-altay/911432/2a0000018ed179e9f3fae46939fafe19bbd8/orig" style="width:300px; height:auto;">
+  <h3 style="width: 100%;">Алматинский технологический университет "АТУ"</h3>
+  <p style="margin-left: -690px; margin-top: 40px;">Алматинский технологический университет (АТУ) — крупное высшее учебное заведение, расположенное в г. Алматы, Казахстан. Он был основан в 1957 году и за более чем 60 лет стал одним из ведущих университетов в Казахстане и Центральной Азии по подготовке специалистов для различных отраслей промышленности и сервиса.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/kaynar.html">
+  <img src="data:image/jpeg;base64,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" style="width:300px; height:auto;">
+  <h3 style="width: 100%;">Алматинский университет энергетики и связи имени Гумарбека Даукеева </h3>
+  <p style="margin-left: -645px; margin-top: 70px;">один из ведущих технических университетов Алматы, Республика Казахстан, специализирующийся на подготовке специалистов для энергетической отрасли, телекоммуникаций, информационных технологий и смежных высокотехнологичных сфер. Он ведёт историю от энергетического института 1970-х годов и был официально основан в современной форме в 1997 году.</p>
+</div>
+
+<div class="card"><a href="/univer/kazakhstan/Almaty/DMU Kazakhstan.html">
+  <img src="https://primeminister.kz/assets/media/photo-2021-11-03-18-46-17.jpg" style="width:300px; height:auto;">
+  <h3 style="width: 100%;">Де Монтфорт Юниверсити Казахстан </h3>
+  <p style="margin-left: -465px; margin-top: 40px;">De Montfort University Kazakhstan (DMU Kazakhstan / Де Монтфорт Юниверсити Казахстан) — это международный университет в Алматы, основанный в 2021 году как первый в Казахстане британский университетский кампус, лицензированный правительством страны и работающий в партнёрстве с De Montfort University (университет из Лестера, Великобритания). При успешном окончании студенты получают британский диплом De Montfort University Leicester, признаваемый во многих странах мира.</p>
+</div>
+<div class="card"><a href="/univer/kazakhstan/Almaty/DMU Kazakhstan.html">
+  <img src="https://avatars.mds.yandex.net/i?id=0a8649e48c0a625b2d8eedfa1a995527c701d70e-10158740-images-thumbs&n=13" style="width:300px; height:auto;">
+  <h3 style="width: 100%;">Евразийский Технологический Университет "ЕТУ"</h3>
+  <p style="margin-left: -465px; margin-top: 40px;">Евразийский технологический университет (ЕТУ) — частный высший учебный университет, расположенный в г. Алматы, Казахстан. Он готовит специалистов, способных работать в условиях современной экономики и индустриально-инновационной среды, и придерживается принципов Болонского процесса и международных стандартов качества образования.</p>
+</div>
+<br><br><br><br><br>
+</body>
+</html>
