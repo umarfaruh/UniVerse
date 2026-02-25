@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Мой профиль - UniVerse</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background-color: #f8f9fa;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background-color: white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+      z-index: 100;
+    }
+
+    .header-container {
+      max-width: 1200px;
+      margin: 0 auto;
+      padding: 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .logo {
+      font-size: 28px;
+      font-weight: 700;
+      color: #6366f1;
+    }
+
+    .nav-right {
+      display: flex;
+      gap: 30px;
+      align-items: center;
+    }
+
+    nav {
+      display: flex;
+      gap: 30px;
+    }
+
+    nav a {
+      text-decoration: none;
+      color: #666;
+      font-weight: 500;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #6366f1;
+    }
+
+    .profile-btn {
+      padding: 10px 20px;
+      background-color: #6366f1;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: background-color 0.3s;
+    }
+
+    .profile-btn:hover {
+      background-color: #4f46e5;
+    }
+
+    .profile-container {
+      max-width: 1200px;
+      margin: 40px auto;
+      padding: 0 20px;
+    }
+
+    .profile-header {
+      background: white;
+      border-radius: 12px;
+      padding: 40px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      margin-bottom: 30px;
+      text-align: center;
+    }
+
+    .avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #6366f1 0%, #4f46e5 100%);
+      margin: 0 auto 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: white;
+      font-size: 48px;
+      font-weight: bold;
+    }
+
+    .profile-header h1 {
+      font-size: 32px;
+      margin-bottom: 10px;
+      color: #111;
+    }
+
+    .profile-header p {
+      font-size: 16px;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .profile-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 25px;
+    }
+
+    .profile-card {
+      background: white;
+      border-radius: 12px;
+      padding: 25px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    .profile-card h3 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #111;
+      margin-bottom: 15px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .profile-card p {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .profile-field {
+      margin-bottom: 15px;
+    }
+
+    .profile-field label {
+      font-weight: 600;
+      color: #333;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .profile-field input {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #e5e7eb;
+      border-radius: 6px;
+      font-size: 14px;
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 10px;
+      margin-top: 20px;
+    }
+
+    .btn {
+      flex: 1;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.3s;
+    }
+
+    .btn-primary {
+      background-color: #6366f1;
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background-color: #4f46e5;
+    }
+
+    .btn-secondary {
+      background-color: #e5e7eb;
+      color: #333;
+    }
+
+    .btn-secondary:hover {
+      background-color: #d1d5db;
+    }
+
+    footer {
+      background: #111827;
+      color: #cbd5e1;
+      text-align: center;
+      padding: 30px 20px;
+      margin-top: 60px;
+    }
+
+    @media (max-width: 768px) {
+      .profile-grid {
+        grid-template-columns: 1fr;
+      }
+
+      nav {
+        gap: 15px;
+      }
+
+      .header-container {
+        flex-wrap: wrap;
+      }
+
+      .nav-right {
+        flex-direction: column;
+        width: 100%;
+        gap: 15px;
+      }
+
+      .profile-header {
+        padding: 20px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-container">
+      <div class="logo">UniVerse</div>
+      <div class="nav-right">
+        <nav>
+          <a href="/index2.html">Главная</a>
+          <a href="/index.html">Университеты</a>
+          <a href="/obshaga/obshaga.html">Общежития</a>
+          <a href="/info.html">О нас</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <div class="profile-container">
+    <div class="profile-header">
+      <div class="avatar">👤</div>
+      <h1>Мой профиль</h1>
+      <p>Управление вашим аккаунтом и личной информацией</p>
+    </div>
+
+    <div class="profile-grid">
+      <div class="profile-card">
+        <h3>🔐 Личные данные</h3>
+        <div class="profile-field">
+          <label>Имя</label>
+          <input type="text" value="Ваше имя" readonly>
+        </div>
+        <div class="profile-field">
+          <label>Email</label>
+          <input type="email" value="your.email@example.com" readonly>
+        </div>
+        <div class="profile-field">
+          <label>Номер телефона</label>
+          <input type="tel" value="+7 707 000 0000" readonly>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary">Редактировать</button>
+          <button class="btn btn-secondary">Отмена</button>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3>📚 Мои избранные университеты</h3>
+        <p>Здесь появятся университеты, которые вы добавили в избранное</p>
+        <p style="margin-top: 10px; color: #999; font-size: 13px;">На данный момент нет добавленных университетов</p>
+      </div>
+
+      <div class="profile-card">
+        <h3>🏠 Мои общежития</h3>
+        <p>Здесь появятся общежития, которые вы добавили в избранное</p>
+        <p style="margin-top: 10px; color: #999; font-size: 13px;">На данный момент нет добавленных общежитий</p>
+      </div>
+
+      <div class="profile-card">
+        <h3>⚙️ Настройки</h3>
+        <div class="profile-field">
+          <label>
+            <input type="checkbox" checked> Получать рассылку новостей
+          </label>
+        </div>
+        <div class="profile-field">
+          <label>
+            <input type="checkbox" checked> Уведомления про обновления
+          </label>
+        </div>
+        <div class="btn-group">
+          <button class="btn btn-primary">Сохранить</button>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3>🔑 Безопасность</h3>
+        <p>Управляйте паролем и параметрами безопасности вашего аккаунта</p>
+        <div class="btn-group">
+          <button class="btn btn-secondary">Изменить пароль</button>
+        </div>
+      </div>
+
+      <div class="profile-card">
+        <h3>📋 О приложении</h3>
+        <p>UniVerse v1.0</p>
+        <p style="margin-top: 10px; font-size: 13px; color: #999;">© 2026 Платформа поиска университетов</p>
+        <div class="btn-group">
+          <button class="btn btn-secondary" onclick="alert('Выход из аккаунта')">Выйти</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2026 UniVerse — Платформа поиска университетов
+  </footer>
+
+</body>
+</html>
