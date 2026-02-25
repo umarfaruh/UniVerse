@@ -1,0 +1,26 @@
+<html>
+<head>
+  <title>Google Login Callback</title>
+</head>
+<body>
+  <script>
+    // Получаем id_token из URL fragment (#id_token=...)
+    const fragment = window.location.hash.substring(1);
+    const params = new URLSearchParams(fragment);
+    const idToken = params.get('id_token');
+    
+    if (idToken && window.opener) {
+      // Отправляем id_token родительскому окну
+      window.opener.postMessage({
+        type: 'google_oauth',
+        id_token: idToken
+      }, window.location.origin);
+      
+      // Закрываем popup
+      window.close();
+    } else {
+      document.body.innerHTML = '<p>Google OAuth callback error</p>';
+    }
+  </script>
+</body>
+</html>
