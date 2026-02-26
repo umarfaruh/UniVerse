@@ -25,12 +25,19 @@
     }
 
     /* FULLSCREEN HERO BACKGROUND */
-    .hero {
+    .hro{
       height: 100vh;
-      background: url('https://images.unsplash.com/photo-1523050854058-8df90110c9f1?q=80&w=1600&auto=format&fit=crop') center/cover no-repeat;
+      margin: 0; /* убирает отступы */
+      background-image: url("https://farabi.university/storage/news/262188307964c79771ca15b412792309_b0d9d041-9927-4eb8-94d9-8d5670b25ba6.jpeg"); /* путь к картине */
+      background-repeat: no-repeat; /* чтобы не повторялась */
+      background-size: cover; /* на всю ширину и высоту экрана */
+      background-position: center; /* по центру */
+    }
+    .hero {
       position: relative;
       color: white;
       display: flex;
+      width: 100%;
       align-items: center;
       justify-content: center;
       text-align: center;
@@ -507,7 +514,7 @@
     </div>
   </div>
 
-  <div class="hero">
+  <div class="hero hro">
     <div class="logo">UniVerse</div>
 
     <div class="header-auth" id="headerAuth">
