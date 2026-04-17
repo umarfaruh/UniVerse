@@ -1,719 +1,580 @@
+<!DOCTYPE html>
 <html lang="ru">
 <head>
   <meta charset="UTF-8">
-  <title>UniVerse — Поиск университетов</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-  <!-- Google Font -->
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
-
-  <!-- Google Sign-In -->
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-
+  <title>UniVerse Pro - Главная</title>
+  <link rel="manifest" href="manifest.json">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
-      box-sizing: border-box;
       margin: 0;
-      padding: 0;
-    }
-    body{
-      background-image: url("https://farabi.university/storage/news/262188307964c79771ca15b412792309_b0d9d041-9927-4eb8-94d9-8d5670b25ba6.jpeg")
-    }
-    body, html {
-      height: 100%;
-      font-family: 'Inter', sans-serif;
+      padding: 0;      cd /Users/umarfaruh/Desktop/findU2
+      git remote remove origin 2>/dev/null || true
+      git remote add origin https://github.com/<your_username>/findU2.git
+      git push -u origin main
+      box-sizing: border-box;
     }
 
-    /* FULLSCREEN HERO BACKGROUND */
-    .hro{
-      height: 100vh;
-      margin: 0; /* убирает отступы */
-      background-image: url("https://farabi.university/storage/news/262188307964c79771ca15b412792309_b0d9d041-9927-4eb8-94d9-8d5670b25ba6.jpeg"); /* путь к картине */
-      background-repeat: no-repeat; /* чтобы не повторялась */
-      background-size: cover; /* на всю ширину и высоту экрана */
-      background-position: center; /* по центру */
+    :root {
+      --primary: #062abb;
+      --secondary: #ff6b6b;
+      --accent: #4ecdc4;
+      --light: #f8f9fa;
+      --dark: #1a1a2e;
     }
-    .hero {
-      position: relative;
+
+    body {
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    /* NAVIGATION */
+    nav {
+      background: linear-gradient(90deg, var(--primary) 0%, #0a4bb8 100%);
       color: white;
-      display: flex;
-      width: 100%;
-      align-items: center;
-      justify-content: center;
-      text-align: center;
-    }
-
-    /* dark overlay */
-    .hero::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(rgba(0,0,0,0.55), rgba(0,0,0,0.65));
-    }
-
-    .hero-content {
-      position: relative;
-      z-index: 2;
-      max-width: 900px;
-      padding: 20px;
-    }
-
-    .logo {
-      font-size: 40px;
-      font-weight: 800;
-      letter-spacing: 1px;
-      position: absolute;
-      top: 30px;
-      left: 40px;
-      z-index: 3;
-    }
-
-    /* HEADER WITH AUTH BUTTONS */
-    .header-auth {
-      position: absolute;
-      top: 30px;
-      right: 40px;
-      z-index: 3;
-      display: flex;
-      gap: 12px;
-    }
-
-    .header-auth button {
-      background: #2563eb;
-      color: white;
-      border: none;
-      padding: 10px 20px;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      font-size: 14px;
-    }
-
-    .header-auth button:hover {
-      background: #1d4ed8;
-    }
-
-    .header-auth .logout-btn {
-      background: #dc2626;
-    }
-
-    .header-auth .logout-btn:hover {
-      background: #b91c1c;
-    }
-
-    /* MODAL STYLES */
-    .auth-modal {
-      display: none;
-      position: fixed;
-      z-index: 1000;
-      left: 0;
-      top: 0;
-      width: 100%;
-      height: 100%;
-      background-color: rgba(0, 0, 0, 0.7);
-      align-items: center;
-      justify-content: center;
-    }
-
-    .auth-modal.show {
-      display: flex;
-    }
-
-    .modal-content {
-      background: white;
-      padding: 40px;
-      border-radius: 16px;
-      width: 90%;
-      max-width: 450px;
-      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-    }
-
-    .modal-header {
+      padding: 1rem 2rem;
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 30px;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
     }
 
-    .modal-header h2 {
-      font-size: 28px;
-      color: #111827;
-      margin: 0;
-    }
-
-    .close-modal {
-      font-size: 28px;
-      font-weight: bold;
-      color: #9ca3af;
-      cursor: pointer;
-      background: none;
-      border: none;
-      padding: 0;
-    }
-
-    .close-modal:hover {
-      color: #111827;
-    }
-
-    /* TABS */
-    .auth-tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 20px;
-      border-bottom: 2px solid #e5e7eb;
-    }
-
-    .tab-btn {
-      background: none;
-      border: none;
-      padding: 12px 20px;
-      font-size: 16px;
-      font-weight: 600;
-      color: #9ca3af;
-      cursor: pointer;
-      border-bottom: 3px solid transparent;
-      transition: 0.2s;
-    }
-
-    .tab-btn.active {
-      color: #2563eb;
-      border-bottom-color: #2563eb;
-    }
-
-    /* FORM STYLES */
-    .form-group {
-      margin-bottom: 16px;
-    }
-
-    .form-group label {
-      display: block;
-      margin-bottom: 6px;
-      font-weight: 600;
-      color: #374151;
-      font-size: 14px;
-    }
-
-    .form-group input {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 14px;
-      font-family: 'Inter', sans-serif;
-      transition: 0.2s;
-    }
-
-    .form-group input:focus {
-      outline: none;
-      border-color: #2563eb;
-      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
-    }
-
-    .auth-form {
-      display: none;
-    }
-
-    .auth-form.show {
-      display: block;
-    }
-
-    .form-submit {
-      width: 100%;
-      padding: 12px;
-      background: #2563eb;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      font-size: 16px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      margin-top: 8px;
-    }
-
-    .form-submit:hover {
-      background: #1d4ed8;
-    }
-
-    .form-footer {
-      text-align: center;
-      margin-top: 16px;
-      font-size: 14px;
-      color: #6b7280;
-    }
-
-    .form-footer a {
-      color: #2563eb;
-      cursor: pointer;
-      font-weight: 600;
-      text-decoration: none;
-    }
-
-    .form-footer a:hover {
-      text-decoration: underline;
-    }
-
-    /* GOOGLE SIGN-IN STYLES */
-    .divider {
+    .logo {
+      font-size: 1.5rem;
+      font-weight: 700;
       display: flex;
       align-items: center;
-      margin: 20px 0;
-      color: #9ca3af;
-      font-size: 14px;
+      gap: 0.5rem;
     }
 
-    .divider::before,
-    .divider::after {
-      content: '';
+    .nav-links {
+      display: flex;
+      gap: 2rem;
+      align-items: center;
       flex: 1;
-      height: 1px;
-      background: #d1d5db;
-    }
-
-    .divider::before {
-      margin-right: 12px;
-    }
-
-    .divider::after {
-      margin-left: 12px;
-    }
-
-    .google-btn {
-      width: 100%;
-      padding: 12px;
-      background: white;
-      color: #374151;
-      border: 1px solid #d1d5db;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: 0.2s;
-      display: flex;
-      align-items: center;
       justify-content: center;
-      gap: 10px;
     }
 
-    .google-btn:hover {
-      background: #f9fafb;
-      border-color: #9ca3af;
-    }
-
-    .user-status {
+    .nav-link {
       color: white;
-      font-weight: 600;
-    }
-
-    h1 {
-      font-size: 56px;
-      font-weight: 800;
-      margin-bottom: 20px;
-    }
-
-    .subtitle {
-      font-size: 20px;
-      opacity: 0.95;
-      margin-bottom: 35px;
-    }
-
-    /* SEARCH BAR */
-    .search-box {
+      text-decoration: none;
+      font-weight: 500;
+      transition: all 0.3s;
       display: flex;
-      background: white;
-      border-radius: 12px;
-      overflow: hidden;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.25);
+      align-items: center;
+      gap: 0.5rem;
     }
 
-    .search-box input {
-      flex: 1;
-      border: none;
-      padding: 18px;
-      font-size: 16px;
-      outline: none;
+    .nav-link:hover {
+      color: #ffd700;
+      transform: translateY(-2px);
     }
 
-    .search-box button {
-      background: #2563eb;
+    .nav-right {
+      display: flex;
+      gap: 1rem;
+      align-items: center;
+      margin-left: auto;
+    }
+
+    .btn-nav {
+      background: rgba(255,255,255,0.2);
       color: white;
-      border: none;
-      padding: 0 28px;
-      font-size: 16px;
-      font-weight: 600;
+      border: 2px solid white;
+      padding: 0.5rem 1rem;
+      border-radius: 8px;
       cursor: pointer;
-      transition: 0.2s;
+      font-weight: 600;
+      transition: all 0.3s;
     }
 
-    .search-box button:hover {
-      background: #1d4ed8;
+    .btn-nav:hover {
+      background: white;
+      color: var(--primary);
+      border-color: white;
     }
 
-    /* FEATURES SECTION */
-    .features {
-      padding: 80px 20px;
-      background: #f5f7fb;
+    /* HERO SECTION */
+    .hero {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+      padding: 6rem 2rem;
       text-align: center;
+    }
+
+    .hero-content {
+      max-width: 800px;
+      margin: 0 auto;
+    }
+
+    .hero h1 {
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      font-weight: 900;
+    }
+
+    .hero p {
+      font-size: 1.3rem;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    .hero-buttons {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-hero {
+      padding: 1rem 2.5rem;
+      border: none;
+      border-radius: 50px;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.3s;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .btn-primary {
+      background: white;
+      color: var(--primary);
+    }
+
+    .btn-primary:hover {
+      transform: scale(1.05);
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .btn-secondary {
+      background: transparent;
+      color: white;
+      border: 2px solid white;
+    }
+
+    .btn-secondary:hover {
+      background: white;
+      color: var(--primary);
+    }
+
+    /* FEATURES */
+    .features {
+      max-width: 1200px;
+      margin: 5rem auto;
+      padding: 0 2rem;
     }
 
     .features h2 {
-      font-size: 36px;
-      margin-bottom: 50px;
-    }
-
-    .grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-      gap: 30px;
-      max-width: 1100px;
-      margin: auto;
-      text-decoration: none; 
-      color: black;
-    }
-
-    .card {
-      background: white;
-      padding: 30px;
-      border-radius: 16px;
-      box-shadow: 0 6px 18px rgba(0,0,0,0.08);
-      transition: 0.25s;
-      text-decoration: none; 
-      color: black;
-    }
-
-    .card:hover {
-      transform: translateY(-6px);
-    }
-
-    .card h3 {
-      margin-bottom: 12px;
-    }
-
-    footer {
-      padding: 30px;
       text-align: center;
-      background: #111827;
-      color: #cbd5e1;
+      font-size: 2.5rem;
+      margin-bottom: 3rem;
+      color: var(--primary);
     }
 
-    @media (max-width: 700px) {
-      h1 { font-size: 36px; }
-      .subtitle { font-size: 16px; }
-      .search-box { flex-direction: column; }
-      .search-box button { padding: 16px; }
-      .modal-content {
-        width: 95%;
-        padding: 30px 20px;
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2rem;
+    }
+
+    .feature-card {
+      background: white;
+      padding: 2rem;
+      border-radius: 15px;
+      text-align: center;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+      transition: all 0.3s;
+    }
+
+    .feature-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+    }
+
+    .feature-icon {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      color: var(--primary);
+    }
+
+    .feature-card h3 {
+      font-size: 1.3rem;
+      margin-bottom: 1rem;
+      color: var(--dark);
+    }
+
+    .feature-card p {
+      color: #666;
+      line-height: 1.8;
+    }
+
+    /* STATS */
+    .stats {
+      background: var(--primary);
+      color: white;
+      padding: 3rem 2rem;
+      margin: 3rem 0;
+    }
+
+    .stats-content {
+      max-width: 1200px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 2rem;
+      text-align: center;
+    }
+
+    .stat {
+      font-size: 0.9rem;
+    }
+
+    .stat-number {
+      font-size: 3rem;
+      font-weight: 900;
+      display: block;
+    }
+
+    .stat-label {
+      opacity: 0.9;
+    }
+
+    /* CTA */
+    .cta {
+      background: linear-gradient(135deg, var(--primary), #0a4bb8);
+      color: white;
+      padding: 4rem 2rem;
+      text-align: center;
+    }
+
+    .cta-content {
+      max-width: 600px;
+      margin: 0 auto;
+    }
+
+    .cta h2 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .cta p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      opacity: 0.95;
+    }
+
+    /* FOOTER */
+    footer {
+      background: var(--dark);
+      color: white;
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+
+    footer-content {
+      max-width: 1200px;
+      margin: 0 auto;
+    }
+
+    .social-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin: 1rem 0;
+      font-size: 1.5rem;
+    }
+
+    .social-links a {
+      color: white;
+      text-decoration: none;
+      transition: all 0.3s;
+    }
+
+    .social-links a:hover {
+      color: #ffd700;
+      transform: scale(1.2);
+    }
+
+    @media (max-width: 768px) {
+      .hero h1 {
+        font-size: 2rem;
       }
-      .header-auth {
-        right: 20px;
-        top: 20px;
+
+      .hero p {
+        font-size: 1rem;
       }
-      .logo {
-        left: 20px;
-        top: 20px;
-        font-size: 28px;
+
+      .features h2 {
+        font-size: 1.8rem;
+      }
+
+      .nav-links {
+        gap: 1rem;
+        font-size: 0.9rem;
+      }
+
+      .cta h2 {
+        font-size: 1.8rem;
       }
     }
   </style>
 </head>
-
 <body>
 
-  <script>
-    // Если страница открыта как redirect_uri после OAuth popup, пробуем отправить id_token обратно в opener
-    (function() {
-      try {
-        if (window.opener && window.location.hash) {
-          const hash = window.location.hash.substring(1); // убираем '#'
-          const params = new URLSearchParams(hash);
-          const id_token = params.get('id_token') || params.get('token') || params.get('access_token');
-          if (id_token) {
-            // отправляем в окно-открывашку
-            window.opener.postMessage({ type: 'google_oauth', id_token: id_token }, window.location.origin);
-            // закрываем popup спустя немного
-            setTimeout(() => window.close(), 500);
-          }
-        }
-      } catch (e) {
-        console.warn('OAuth redirect handler error:', e);
-      }
-    })();
-  </script>
+<!-- NAVIGATION -->
+<nav>
+  <div class="logo">
+    <i class="fas fa-graduation-cap"></i> UniVerse Pro
+  </div>
+  <div class="nav-links">
+    <a href="index2.html" class="nav-link">Главная</a>
+    <a href="index5.html" class="nav-link">Поиск</a>
+    <a href="obshaga/obshaga.html" class="nav-link">Общежитие</a>
+    <a href="info.html" class="nav-link">О нас</a>
+  </div>
+  <div class="nav-right">
+    <div id="userPanel" style="display: none; color: white; display: flex; align-items: center; gap: 1rem;">
+      <span id="userName">Пользователь</span>
+      <button class="btn-nav" onclick="goToProfile()">
+        <i class="fas fa-user"></i> Профиль
+      </button>
+      <button class="btn-nav" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> Выход
+      </button>
+    </div>
+    <button class="btn-nav" id="loginBtn" onclick="universeAuth.openModal()">
+      <i class="fas fa-sign-in-alt"></i> Вход/Регистрация
+    </button>
+  </div>
+</nav>
 
-  <!-- AUTH MODAL -->
-  <div id="authModal" class="auth-modal">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h2 id="modalTitle">Вход</h2>
-        <button class="close-modal" onclick="closeAuthModal()">&times;</button>
-      </div>
-
-      <!-- TABS -->
-      <div class="auth-tabs">
-        <button class="tab-btn active" onclick="switchTab('login')">Вход</button>
-        <button class="tab-btn" onclick="switchTab('register')">Регистрация</button>
-      </div>
-
-      <!-- LOGIN FORM -->
-      <form id="loginForm" class="auth-form show">
-        <div class="form-group">
-          <label for="loginEmail">Email</label>
-          <input type="email" id="loginEmail" placeholder="Введите вашу почту" required>
-        </div>
-        <div class="form-group">
-          <label for="loginPassword">Пароль</label>
-          <input type="password" id="loginPassword" placeholder="Введите пароль" required>
-        </div>
-        <button type="submit" class="form-submit">Войти</button>
-        <div class="form-footer">
-          Нет аккаунта? <a onclick="switchTab('register')">Зарегистрируйтесь</a>
-        </div>
-        <div class="divider">или</div>
-        <button type="button" class="google-btn" onclick="handleGoogleLogin()">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Войти через Google
-        </button>
-      </form>
-
-      <!-- REGISTER FORM -->
-      <form id="registerForm" class="auth-form">
-        <div class="form-group">
-          <label for="regUsername">Имя пользователя</label>
-          <input type="text" id="regUsername" placeholder="Ваше имя" required>
-        </div>
-        <div class="form-group">
-          <label for="regEmail">Email</label>
-          <input type="email" id="regEmail" placeholder="Ваша почта" required>
-        </div>
-        <div class="form-group">
-          <label for="regPassword">Пароль</label>
-          <input type="password" id="regPassword" placeholder="Придумайте пароль" required>
-        </div>
-        <button type="submit" class="form-submit">Зарегистрироваться</button>
-        <div class="form-footer">
-          Уже есть аккаунт? <a onclick="switchTab('login')">Войдите</a>
-        </div>
-        <div class="divider">или</div>
-        <button type="button" class="google-btn" onclick="handleGoogleLogin('register')">
-          <svg width="18" height="18" viewBox="0 0 24 24">
-            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-            <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
-            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
-          </svg>
-          Регистрация через Google
-        </button>
-      </form>
+<!-- HERO SECTION -->
+<section class="hero">
+  <div class="hero-content">
+    <h1>🎓 Найди свой идеальный университет</h1>
+    <p>Поиск лучших учебных заведений по всему миру в одном месте</p>
+    <div class="hero-buttons">
+      <button class="btn-hero btn-primary" onclick="goToSearch()">
+        <i class="fas fa-search"></i> Начать поиск
+      </button>
+      <button class="btn-hero btn-secondary" onclick="goToInfo()">
+        <i class="fas fa-info-circle"></i> Узнать больше
+      </button>
     </div>
   </div>
+</section>
 
-  <div class="hero hro">
-    <div class="logo">UniVerse</div>
-
-    <div class="header-auth" id="headerAuth">
-      <button onclick="openAuthModal()">Вход</button>
-      <button onclick="openAuthModal('register')">Регистрация</button>
-    </div>
-
-    <div class="header-auth" id="userInfo" style="display: none;">
-      <span class="user-status" id="userStatus"></span>
-      <button class="logout-btn" onclick="logout()">Выход</button>
-    </div>
-
-    <div class="hero-content">
-      <h1>Найди университет своей мечты</h1>
-      <p class="subtitle">Поиск вузов по странам, городам, направлениям и условиям обучения</p>
-
-      <div class="search-box">
-        <form class="search-box" style="width:1000px;">
-          <input style="width:200px; margin-left: 20px;" list="countries" id="countryInput" placeholder="Поиск ">
-          <datalist id="countries">
-            <option value="Универы">
-            <option value="Общежитие">
-            <option value="Страны">
-          </datalist>
-           <button type="button" onclick="searchUniversities()">Нажми</button>
-        </form>
+<!-- FEATURES -->
+<section class="features">
+  <h2>Почему выбирают UniVerse Pro?</h2>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-search"></i>
       </div>
+      <a href = "index5.html">
+      <h3>Полный поиск</h3>
+      <p>Продвинутый поиск с фильтрацией по городу, стране, рейтингу и специальности</p>
+      </a>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-star"></i>
+      </div>
+      <h3>Рейтинги</h3>
+      <p>Настоящие рейтинги университетов основанные на отзывах студентов</p>
+    </div>
+
+    <div class="feature-card" onclick="window.location.href='country.html'" style="cursor:pointer;">
+      <div class="feature-icon">
+        <i class="fas fa-globe"></i>
+      </div>
+      <h3>Страны</h3>
+      <p>Перейдите на страницу поиска по странам для быстрого выбора лучшего обучения за рубежом.</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-cube"></i>
+      </div>
+      <h3>Сравнение</h3>
+      <p>Сравнивайте несколько университетов одновременно чтобы принять лучшее решение</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-building"></i>
+      </div>
+      <h3>Общежитие</h3>
+      <p>Информация о вариантах размещения и общежитиях при каждом университете</p>
+    </div>
+
+    <div class="feature-card">
+      <div class="feature-icon">
+        <i class="fas fa-user-circle"></i>
+      </div>
+      <h3>Личный кабинет</h3>
+      <p>Управляйте несколькими аккаунтами и синхронизируйте данные между устройствами</p>
     </div>
   </div>
+</section>
 
+<!-- STATS -->
+<section class="stats">
+  <div class="stats-content">
+    <div class="stat">
+      <span class="stat-number">500+</span>
+      <span class="stat-label">Университетов</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">50+</span>
+      <span class="stat-label">Стран</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">100K+</span>
+      <span class="stat-label">Пользователей</span>
+    </div>
+    <div class="stat">
+      <span class="stat-number">4.9★</span>
+      <span class="stat-label">Средний рейтинг</span>
+    </div>
+  </div>
+</section>
 
-  <script>
-  function searchUniversities() {
-    const country = document.getElementById("countryInput").value;
+<!-- CTA -->
+<section class="cta">
+  <div class="cta-content">
+    <h2>Готов начать свой путь?</h2>
+    <p>Присоединяйся к тысячам студентов, которые уже нашли свой идеальный университет через UniVerse Pro</p>
+    <button class="btn-hero btn-primary" onclick="goToSearch()">
+      <i class="fas fa-rocket"></i> Начни сейчас
+    </button>
+  </div>
+</section>
 
-    if (country === "Универы" || country === "универы" || country === "универ"  || country === "Универ") {
-      window.location.href = "index.html";
-    } 
-    else if (country === "Общежитие" || country === "общежитие") {
-      window.location.href = "obshaga/obshaga.html";
-    } 
-    else if (country === "Страны" || country === "страны" || country === "страна" || country === "Страны") {
-      window.location.href = "country.html";
-    } 
-    else {
-      alert("Страна не найдена ❌");
-    }
+<!-- FOOTER -->
+<footer>
+  <div class="footer-content">
+    <h3>UniVerse Pro</h3>
+    <p>Твой помощник в выборе университета</p>
+    <div class="social-links">
+      <a href="#" title="Facebook"><i class="fab fa-facebook"></i></a>
+      <a href="#" title="Twitter"><i class="fab fa-twitter"></i></a>
+      <a href="#" title="Telegram"><i class="fab fa-telegram"></i></a>
+      <a href="#" title="Instagram"><i class="fab fa-instagram"></i></a>
+    </div>
+    <p style="margin-top: 2rem; opacity: 0.7;">&copy; 2026 UniVerse Pro. Все права защищены.</p>
+  </div>
+</footer>
+
+<script src="auth.js"></script>
+<script>
+// Проверить аутентификацию при загрузке
+window.onload = () => {
+  const user = localStorage.getItem('universe_currentUser');
+  if (user) {
+    const userData = JSON.parse(user);
+    document.getElementById('userPanel').style.display = 'flex';
+    document.getElementById('loginBtn').style.display = 'none';
+    document.getElementById('userName').textContent = userData.name || 'Пользователь';
   }
-</script>
+};
 
+function goToSearch() {
+  window.location.href = 'index5.html';
+}
 
+function goToProfile() {
+  window.location.href = 'profile.html';
+}
 
-  <section class="features">
-    <h2>Что есть в UniVerse</h2>
+function goToInfo() {
+  window.location.href = 'info.html';
+}
 
-    <div class="grid" >
-      <div class="card"><a href="/countri.html" style="text-decoration: none; color: black;">
-        <h3>🌍 Поиск по странам</h3>
-        <p>Сравнивайте университеты по всему миру в одном месте.</p>
-      </a></div>
+function logout() {
+  localStorage.removeItem('universe_currentUser');
+  location.reload();
+}
 
-      <div class="card"> <a href="/index.html" style="text-decoration: none; color: black;">
-        <h3>🏫 Университеты</h3>
-        <p>Подробные страницы университетов и программ обучения.</p>
-      </a></div>
+// PWA and Push Notifications
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('/sw.js')
+      .then((registration) => {
+        console.log('SW registered: ', registration);
 
-      <div class="card"
-      ss="card"> <a href="/obshaga/obshaga.html" style="text-decoration: none; color: black;">
-        <h3>🏠 Общежития</h3>
-        <p>Информация о проживании и условиях для студентов.</p>
-      </a></div>
+        // Request notification permission
+        if ('Notification' in window) {
+          Notification.requestPermission().then((permission) => {
+            if (permission === 'granted') {
+              console.log('Notification permission granted');
+            }
+          });
+        }
+      })
+      .catch((registrationError) => {
+        console.log('SW registration failed: ', registrationError);
+      });
+  });
+}
 
-      <div class="card">
-        <h3>📊 Сравнение</h3>
-        <p>Сравнивайте требования, стоимость и рейтинги.</p>
+// Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', (e) => {
+  e.preventDefault();
+  deferredPrompt = e;
+
+  // Show install button or banner
+  const installBanner = document.createElement('div');
+  installBanner.id = 'install-banner';
+  installBanner.innerHTML = `
+    <div style="position: fixed; bottom: 20px; left: 20px; right: 20px; background: var(--primary); color: white; padding: 1rem; border-radius: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); z-index: 1000; display: flex; justify-content: space-between; align-items: center;">
+      <div>
+        <strong>Установить UniVerse Pro</strong><br>
+        <small>Работает как приложение на вашем устройстве</small>
+      </div>
+      <div>
+        <button onclick="installPWA()" style="background: white; color: var(--primary); border: none; padding: 0.5rem 1rem; border-radius: 5px; margin-right: 0.5rem; cursor: pointer;">Установить</button>
+        <button onclick="dismissInstall()" style="background: transparent; color: white; border: 1px solid white; padding: 0.5rem 1rem; border-radius: 5px; cursor: pointer;">Позже</button>
       </div>
     </div>
-   
-  </section>
+  `;
+  document.body.appendChild(installBanner);
 
-  <footer>
-    © 2026 UniVerse — Платформа поиска университетов
-  </footer>
+  // Auto-hide after 10 seconds
+  setTimeout(() => {
+    const banner = document.getElementById('install-banner');
+    if (banner) banner.remove();
+  }, 10000);
+});
 
-  <!-- AUTH SCRIPTS -->
-  <script src="config.js"></script>
-  <script src="app.js"></script>
-  <script>
-    // Modal management
-    function openAuthModal(tab = 'login') {
-      document.getElementById('authModal').classList.add('show');
-      if (tab === 'register') {
-        switchTab('register');
+function installPWA() {
+  if (deferredPrompt) {
+    deferredPrompt.prompt();
+    deferredPrompt.userChoice.then((choiceResult) => {
+      if (choiceResult.outcome === 'accepted') {
+        console.log('User accepted the install prompt');
       }
-    }
-
-    function closeAuthModal() {
-      document.getElementById('authModal').classList.remove('show');
-    }
-
-    function switchTab(tab) {
-      const loginForm = document.getElementById('loginForm');
-      const registerForm = document.getElementById('registerForm');
-      const tabButtons = document.querySelectorAll('.tab-btn');
-      const modalTitle = document.getElementById('modalTitle');
-
-      if (tab === 'login') {
-        loginForm.classList.add('show');
-        registerForm.classList.remove('show');
-        tabButtons[0].classList.add('active');
-        tabButtons[1].classList.remove('active');
-        modalTitle.innerText = 'Вход';
-      } else {
-        loginForm.classList.remove('show');
-        registerForm.classList.add('show');
-        tabButtons[0].classList.remove('active');
-        tabButtons[1].classList.add('active');
-        modalTitle.innerText = 'Регистрация';
-      }
-    }
-
-    // Close modal on escape key
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'Escape') {
-        closeAuthModal();
-      }
+      deferredPrompt = null;
+      document.getElementById('install-banner').remove();
     });
+  }
+}
 
-    // Close modal on outside click
-    document.getElementById('authModal').addEventListener('click', function(e) {
-      if (e.target === this) {
-        closeAuthModal();
-      }
-    });
-
-    // Check user status on page load
-    window.addEventListener('load', function() {
-      const currentUser = JSON.parse(localStorage.getItem('universe_currentUser'));
-      if (currentUser) {
-        document.getElementById('headerAuth').style.display = 'none';
-        document.getElementById('userInfo').style.display = 'flex';
-        document.getElementById('userStatus').innerText = 'Привет, ' + currentUser.username + '!';
-      }
-    });
-
-    // Custom form handling for modal forms
-    const modalLoginForm = document.getElementById('loginForm');
-    const modalRegisterForm = document.getElementById('registerForm');
-
-    modalLoginForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const email = document.getElementById('loginEmail').value;
-      const password = document.getElementById('loginPassword').value;
-
-      let users = JSON.parse(localStorage.getItem('universe_users')) || [];
-      const user = users.find(u => u.email === email && u.password === password);
-
-      if (!user) {
-        alert('Неверный email или пароль');
-        return;
-      }
-
-      localStorage.setItem('universe_currentUser', JSON.stringify(user));
-      closeAuthModal();
-      document.getElementById('headerAuth').style.display = 'none';
-      document.getElementById('userInfo').style.display = 'flex';
-      document.getElementById('userStatus').innerText = 'Привет, ' + user.username + '!';
-      modalLoginForm.reset();
-    });
-
-    modalRegisterForm.addEventListener('submit', function(e) {
-      e.preventDefault();
-      const username = document.getElementById('regUsername').value;
-      const email = document.getElementById('regEmail').value;
-      const password = document.getElementById('regPassword').value;
-
-      let users = JSON.parse(localStorage.getItem('universe_users')) || [];
-
-      if (users.find(u => u.email === email)) {
-        alert('Пользователь с такой почтой уже существует!');
-        return;
-      }
-
-      users.push({ username, email, password });
-      localStorage.setItem('universe_users', JSON.stringify(users));
-
-      alert('Регистрация успешна! Теперь войдите в свой аккаунт.');
-      switchTab('login');
-      modalRegisterForm.reset();
-    });
-
-    function logout() {
-      localStorage.removeItem('universe_currentUser');
-      document.getElementById('headerAuth').style.display = 'flex';
-      document.getElementById('userInfo').style.display = 'none';
-      alert('Вы вышли из аккаунта');
-      window.location.href = 'index2.html';
-    }
-  </script>
+function dismissInstall() {
+  document.getElementById('install-banner').remove();
+}
+</script>
 
 </body>
 </html>
