@@ -501,8 +501,9 @@
       color: white;
     }
 
-    /* FAVORITES GRID */
-    .favorites-grid {
+    /* FAVORITES / SUBSCRIPTIONS GRID */
+    .favorites-grid,
+    .subscriptions-grid {
       display: grid;
       grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
       gap: 1.5rem;
@@ -557,6 +558,61 @@
 
     .favorite-card-btn:hover {
       background: #ff4757;
+    }
+
+    /* SUBSCRIPTION CARD */
+    .subscription-card {
+      background: var(--light);
+      border-radius: 12px;
+      padding: 1rem;
+      position: relative;
+      transition: all 0.3s;
+      border-left: 4px solid var(--primary);
+    }
+
+    .subscription-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+    }
+
+    .subscription-card-title {
+      font-weight: 600;
+      color: var(--dark);
+      margin-bottom: 0.5rem;
+    }
+
+    .subscription-card-location {
+      font-size: 0.85rem;
+      color: #999;
+      display: flex;
+      align-items: center;
+      gap: 0.3rem;
+      margin-bottom: 0.5rem;
+    }
+
+    .subscription-card-date {
+      font-size: 0.8rem;
+      color: #aaa;
+      margin-bottom: 1rem;
+    }
+
+    .subscription-card-btn {
+      width: 100%;
+      padding: 0.6rem;
+      background: #e8f0ff;
+      color: var(--primary);
+      border: 2px solid var(--primary);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      transition: all 0.3s;
+    }
+
+    .subscription-card-btn:hover {
+      background: var(--secondary);
+      color: white;
+      border-color: var(--secondary);
     }
 
     .empty-state {
@@ -722,6 +778,10 @@
           <div class="stat-label">Избранное</div>
         </div>
         <div class="stat">
+          <div class="stat-number" id="subCount">0</div>
+          <div class="stat-label">Подписки</div>
+        </div>
+        <div class="stat">
           <div class="stat-number" id="accCount">1</div>
           <div class="stat-label">Аккаунтов</div>
         </div>
@@ -755,6 +815,9 @@
         </div>
         <div class="tab" onclick="switchTab('favorites', this)">
           <i class="fas fa-heart"></i> Избранное
+        </div>
+        <div class="tab" onclick="switchTab('subscriptions', this)">
+          <i class="fas fa-bell"></i> Подписки
         </div>
         <div class="tab" onclick="switchTab('settings', this)">
           <i class="fas fa-cog"></i> Настройки
@@ -862,6 +925,20 @@
         </div>
       </div>
 
+      <!-- SUBSCRIPTIONS TAB -->
+      <div id="subscriptionsTab" class="tab-content">
+        <h2>Мои подписки</h2>
+        <p style="color: #999; margin-top: 0.5rem; margin-bottom: 1.5rem; font-size: 0.95rem;">
+          Университеты, на которые вы подписаны. Нажмите «Подписаться» на странице поиска, чтобы следить за обновлениями.
+        </p>
+        <div id="subscriptionsContainer" style="margin-top: 1rem;">
+          <div class="empty-state">
+            <i class="fas fa-bell"></i>
+            <p>У вас пока нет подписок на университеты</p>
+          </div>
+        </div>
+      </div>
+
       <!-- SETTINGS TAB -->
       <div id="settingsTab" class="tab-content">
         <h2>Настройки аккаунта</h2>
@@ -946,11 +1023,13 @@ let currentUser = null;
 let allAccounts = [];
 let favorites = [];
 let dormFavorites = [];
+let subscriptions = [];
 
 // INITIALIZATION
 window.onload = () => {
   loadFavorites();
   loadDormFavorites();
+  loadSubscriptions();
   loadUserData();
 };
 
@@ -992,11 +1071,17 @@ function loadDormFavorites() {
   dormFavorites = rawDormFavorites.filter(favoriteName => typeof favoriteName === 'string' && favoriteName.trim().length > 0);
 }
 
+function loadSubscriptions() {
+  const rawSubs = JSON.parse(localStorage.getItem('universe_subscriptions') || '[]');
+  subscriptions = rawSubs.filter(s => s && typeof s.id === 'number');
+}
+
 function updateUI() {
   // Sidebar
   document.getElementById('sidebarName').textContent = currentUser.name || 'Пользователь';
   document.getElementById('sidebarEmail').textContent = currentUser.email;
   document.getElementById('favCount').textContent = favorites.length;
+  document.getElementById('subCount').textContent = subscriptions.length;
   const dormFavCountElement = document.getElementById('dormFavCount');
   if (dormFavCountElement) {
     dormFavCountElement.textContent = dormFavorites.length;
@@ -1029,6 +1114,8 @@ function updateUI() {
   renderFavorites();
 
   renderDormFavorites();
+
+  renderSubscriptions();
 }
 
 function renderAccountsList() {
@@ -1252,6 +1339,49 @@ function removeDormFavorite(dormName) {
     dormFavCountElement.textContent = dormFavorites.length;
   }
   renderDormFavorites();
+}
+
+function renderSubscriptions() {
+  const container = document.getElementById('subscriptionsContainer');
+
+  if (subscriptions.length === 0) {
+    container.innerHTML = `
+      <div class="empty-state">
+        <i class="fas fa-bell"></i>
+        <p>У вас пока нет подписок на университеты</p>
+        <p style="font-size:0.85rem; margin-top:0.5rem;">
+          Перейдите на <a href="index5.html" style="color:var(--primary);">страницу поиска</a>
+          и нажмите кнопку «Подписаться» на карточке университета.
+        </p>
+      </div>
+    `;
+    return;
+  }
+
+  const cards = subscriptions.map(sub => `
+    <div class="subscription-card card-hover fade-in">
+      <div class="subscription-card-title">${sub.name}</div>
+      <div class="subscription-card-location">
+        <i class="fas fa-map-marker-alt"></i> ${sub.city || 'Город не указан'}
+      </div>
+      <div class="subscription-card-date">
+        <i class="fas fa-clock"></i> Подписка с ${sub.subscribedAt ? new Date(sub.subscribedAt).toLocaleDateString('ru-RU') : '-'}
+      </div>
+      <button class="subscription-card-btn" onclick="removeSubscription(${sub.id})">
+        <i class="fas fa-bell-slash"></i> Отписаться
+      </button>
+    </div>
+  `).join('');
+
+  container.innerHTML = `<div class="subscriptions-grid">${cards}</div>`;
+}
+
+function removeSubscription(id) {
+  const normalizedId = Number(id);
+  subscriptions = subscriptions.filter(s => s.id !== normalizedId);
+  localStorage.setItem('universe_subscriptions', JSON.stringify(subscriptions));
+  document.getElementById('subCount').textContent = subscriptions.length;
+  renderSubscriptions();
 }
 
 function openAddAccountModal() {

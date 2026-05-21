@@ -431,6 +431,18 @@
       border-color: var(--secondary);
     }
 
+    .btn-subscribe {
+      background: #f0f0f0;
+      color: #999;
+      border: 2px solid #e0e0e0;
+    }
+
+    .btn-subscribe.subscribed {
+      background: #e8f0ff;
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -1038,11 +1050,13 @@ const universitiesData = [
 let filteredData = [];
 let currentUser = null;
 let favorites = [];
+let subscriptions = [];
 
 // INITIALIZATION
 window.onload = async () => {
   checkAuthStatus();
   loadFavorites();
+  loadSubscriptions();
 
   filteredData = [...universitiesData];
   renderUniversities();
@@ -1284,7 +1298,9 @@ function renderUniversities() {
 
   container.innerHTML = `
     <div class="universities-grid">
-      ${filteredData.map(u => `
+      ${filteredData.map(u => {
+        const isSubscribed = subscriptions.some(s => s.id === u.id);
+        return `
         <div class="university-card card-hover fade-in">
           <div class="card-image" style="background-image: url('${u.img}'); background-size: cover;">
             <div class="card-badge">⭐ ${u.rating}</div>
@@ -1319,10 +1335,14 @@ function renderUniversities() {
                       onclick="toggleFavorite(${u.id})">
                 <i class="fas fa-heart"></i>
               </button>
+              <button class="card-btn btn-subscribe ${isSubscribed ? 'subscribed' : ''}"
+                      onclick="toggleSubscription(${u.id})" title="${isSubscribed ? 'Отписаться' : 'Подписаться'}">
+                <i class="fas fa-bell"></i>
+              </button>
             </div>
           </div>
         </div>
-      `).join('')}
+      `}).join('')}
     </div>
   `;
 }
@@ -1369,6 +1389,33 @@ function toggleFavorite(id) {
   saveFavoriteMeta(favoriteMeta);
   renderUniversities();
   showSuccess(`${isCurrentlyFavorite ? '💔 Удалено' : '❤️ Добавлено'} из избранного`);
+}
+
+// SUBSCRIPTIONS
+function loadSubscriptions() {
+  const rawSubs = JSON.parse(localStorage.getItem('universe_subscriptions') || '[]');
+  subscriptions = rawSubs.filter(s => s && typeof s.id === 'number');
+}
+
+function toggleSubscription(id) {
+  const normalizedId = Number(id);
+  const isSubscribed = subscriptions.some(s => s.id === normalizedId);
+
+  if (isSubscribed) {
+    subscriptions = subscriptions.filter(s => s.id !== normalizedId);
+  } else {
+    const university = universitiesData.find(u => u.id === normalizedId);
+    subscriptions.push({
+      id: normalizedId,
+      name: university?.name || `Университет #${normalizedId}`,
+      city: university?.city || 'Город не указан',
+      subscribedAt: new Date().toISOString()
+    });
+  }
+
+  localStorage.setItem('universe_subscriptions', JSON.stringify(subscriptions));
+  renderUniversities();
+  showSuccess(`${isSubscribed ? '🔕 Отписка оформлена' : '🔔 Подписка оформлена'}`);
 }
 
 // NAVIGATION
