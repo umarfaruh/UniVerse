@@ -952,6 +952,7 @@ const DEFAULT_SETTINGS = {
   showProfile: true,
   darkMode: false
 };
+const USER_ID_MODULUS = 2147483646;
 
 function getRandomId() {
   if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
@@ -971,7 +972,7 @@ function generateUserId(user = {}) {
 
   let hash = 0;
   for (const char of source) {
-    hash = (hash * 31 + char.charCodeAt(0)) % 2147483647;
+    hash = (hash * 31 + char.charCodeAt(0)) % USER_ID_MODULUS;
   }
 
   return hash + 1;
@@ -1519,7 +1520,12 @@ async function togglePushNotifications() {
       } else {
         checkbox.checked = false;
         updateUserSettings({ notifyPush: false });
-        showMessage('Разрешение отклонено. Откройте настройки сайта рядом с адресной строкой и включите уведомления.', 'error');
+        showMessage(
+          permission === 'denied'
+            ? 'Разрешение отклонено. Откройте настройки сайта рядом с адресной строкой и включите уведомления.'
+            : 'Разрешение не выдано. Попробуйте включить уведомления еще раз.',
+          'error'
+        );
       }
     } catch (error) {
       console.error('Push subscription failed:', error);
