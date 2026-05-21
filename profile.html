@@ -1073,7 +1073,7 @@ function loadUserData() {
   const user = localStorage.getItem('universe_currentUser');
   if (!user) {
     currentUser = normalizeUser({
-      id: Date.now(),
+      id: getRandomId(),
       name: 'Гость',
       email: 'guest@universe.local',
       createdAt: new Date().toISOString()
@@ -1407,7 +1407,7 @@ function addNewAccount(e) {
   }
 
   const newAccount = normalizeUser({
-    id: Date.now(),
+    id: getRandomId(),
     name,
     username: name,
     email,
