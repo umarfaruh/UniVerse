@@ -957,7 +957,7 @@ function getRandomId() {
   if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
     const values = new Uint32Array(1);
     window.crypto.getRandomValues(values);
-    return values[0] || Date.now();
+    return values[0];
   }
 
   return Date.now() + Math.floor(Math.random() * 1000);
