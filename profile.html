@@ -1090,8 +1090,8 @@ function loadUserData() {
       ...matchedUser,
       ...currentUser,
       settings: {
-        ...(matchedUser.settings || DEFAULT_SETTINGS),
-        ...(currentUser.settings || DEFAULT_SETTINGS)
+        ...matchedUser.settings,
+        ...currentUser.settings
       }
     });
   }
@@ -1519,7 +1519,7 @@ async function togglePushNotifications() {
       } else {
         checkbox.checked = false;
         updateUserSettings({ notifyPush: false });
-        showMessage('Разрешение на уведомления отклонено. Измените его в настройках браузера.', 'error');
+        showMessage('Разрешение отклонено. Откройте настройки сайта рядом с адресной строкой и включите уведомления.', 'error');
       }
     } catch (error) {
       console.error('Push subscription failed:', error);
