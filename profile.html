@@ -874,19 +874,19 @@
           </div>
           <div class="form-group">
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" id="notifyEmail" checked>
+              <input type="checkbox" id="notifyEmail" onchange="toggleEmailNotifications()">
               Получать уведомления по email
             </label>
           </div>
           <div class="form-group">
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" id="showProfile" checked>
+              <input type="checkbox" id="showProfile" onchange="toggleProfileVisibility()">
               Показывать мой профиль в поиске
             </label>
           </div>
           <div class="form-group">
             <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
-              <input type="checkbox" id="darkMode">
+              <input type="checkbox" id="darkMode" onchange="toggleDarkModeSetting()">
               Темный режим
             </label>
           </div>
@@ -946,6 +946,110 @@ let currentUser = null;
 let allAccounts = [];
 let favorites = [];
 let dormFavorites = [];
+const DEFAULT_SETTINGS = {
+  notifyPush: false,
+  notifyEmail: true,
+  showProfile: true,
+  darkMode: false
+};
+
+function generateUserId(user = {}) {
+  const source = `${user.email || ''}|${user.username || ''}|${user.name || ''}`.toLowerCase();
+  if (!source.replace(/\|/g, '').trim()) {
+    return Date.now();
+  }
+
+  let hash = 0;
+  for (const char of source) {
+    hash = (hash * 31 + char.charCodeAt(0)) % 2147483647;
+  }
+
+  return hash || Date.now();
+}
+
+function getUserDisplayName(user = {}) {
+  if (typeof user.name === 'string' && user.name.trim()) {
+    return user.name.trim();
+  }
+
+  if (typeof user.username === 'string' && user.username.trim()) {
+    return user.username.trim();
+  }
+
+  return 'Пользователь';
+}
+
+function normalizeUser(user = {}) {
+  const normalized = { ...user };
+
+  normalized.id = normalized.id || generateUserId(normalized);
+  normalized.name = getUserDisplayName(normalized);
+  normalized.username = typeof normalized.username === 'string' && normalized.username.trim()
+    ? normalized.username.trim()
+    : normalized.name;
+  normalized.phone = normalized.phone || '';
+  normalized.bio = normalized.bio || '';
+  normalized.city = normalized.city || '';
+  normalized.createdAt = normalized.createdAt || new Date().toISOString();
+  normalized.favorites = Array.isArray(normalized.favorites) ? normalized.favorites : [];
+  normalized.settings = {
+    ...DEFAULT_SETTINGS,
+    ...(normalized.settings || {})
+  };
+
+  return normalized;
+}
+
+function persistUsers(users) {
+  const normalizedUsers = users.map(normalizeUser);
+  localStorage.setItem('universe_users', JSON.stringify(normalizedUsers));
+  allAccounts = normalizedUsers;
+  return normalizedUsers;
+}
+
+function persistCurrentUser() {
+  if (!currentUser) return;
+
+  currentUser = normalizeUser(currentUser);
+  localStorage.setItem('universe_currentUser', JSON.stringify(currentUser));
+
+  const users = JSON.parse(localStorage.getItem('universe_users') || '[]').map(normalizeUser);
+  const index = users.findIndex(user => user.id === currentUser.id || user.email === currentUser.email);
+
+  if (index > -1) {
+    users[index] = currentUser;
+    persistUsers(users);
+  } else {
+    allAccounts = users;
+  }
+}
+
+function updateSettingsUI() {
+  if (!currentUser) return;
+
+  const settings = currentUser.settings || DEFAULT_SETTINGS;
+  const notifyPush = document.getElementById('notifyPush');
+  const notifyEmail = document.getElementById('notifyEmail');
+  const showProfile = document.getElementById('showProfile');
+  const darkMode = document.getElementById('darkMode');
+
+  if (notifyPush) notifyPush.checked = Boolean(settings.notifyPush);
+  if (notifyEmail) notifyEmail.checked = Boolean(settings.notifyEmail);
+  if (showProfile) showProfile.checked = Boolean(settings.showProfile);
+  if (darkMode) darkMode.checked = Boolean(settings.darkMode);
+}
+
+function updateUserSettings(partialSettings = {}) {
+  currentUser = normalizeUser({
+    ...currentUser,
+    settings: {
+      ...(currentUser?.settings || DEFAULT_SETTINGS),
+      ...partialSettings
+    }
+  });
+  persistCurrentUser();
+  updateSettingsUI();
+}
 
 // INITIALIZATION
 window.onload = () => {
@@ -955,29 +1059,37 @@ window.onload = () => {
 };
 
 function loadUserData() {
+  loadAllAccounts();
   const user = localStorage.getItem('universe_currentUser');
   if (!user) {
-    const guestUser = {
+    currentUser = normalizeUser({
       id: Date.now(),
       name: 'Гость',
       email: 'guest@universe.local',
       createdAt: new Date().toISOString()
-    };
-    localStorage.setItem('universe_currentUser', JSON.stringify(guestUser));
-    currentUser = guestUser;
-    loadAllAccounts();
+    });
+    persistCurrentUser();
     updateUI();
     return;
   }
 
-  currentUser = JSON.parse(user);
-  loadAllAccounts();
+  currentUser = normalizeUser(JSON.parse(user));
+  const matchedUser = allAccounts.find(account => account.id === currentUser.id || account.email === currentUser.email);
+  if (matchedUser) {
+    currentUser = matchedUser;
+  }
+  persistCurrentUser();
   updateUI();
 }
 
 function loadAllAccounts() {
   const users = JSON.parse(localStorage.getItem('universe_users') || '[]');
-  allAccounts = users;
+  if (users.length === 0) {
+    allAccounts = [];
+    return;
+  }
+
+  persistUsers(users);
 }
 
 function loadFavorites() {
@@ -1003,7 +1115,7 @@ function updateUI() {
   }
   document.getElementById('accCount').textContent = allAccounts.length;
 
-  const initials = (currentUser.name || 'У').split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
+  const initials = getUserDisplayName(currentUser).split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2);
   document.getElementById('avatarInitials').textContent = initials;
 
   // Profile Tab
@@ -1029,15 +1141,16 @@ function updateUI() {
   renderFavorites();
 
   renderDormFavorites();
+  updateSettingsUI();
 }
 
 function renderAccountsList() {
   const container = document.getElementById('accountsList');
   container.innerHTML = allAccounts.map(acc => `
     <div class="account-item ${acc.id === currentUser.id ? 'active' : ''}" onclick="switchAccount(${acc.id})">
-      <div class="account-avatar">${acc.name.split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)}</div>
+      <div class="account-avatar">${getUserDisplayName(acc).split(' ').map(n => n[0]).join('').toUpperCase().slice(0,2)}</div>
       <div>
-        <div class="account-name">${acc.name}</div>
+        <div class="account-name">${getUserDisplayName(acc)}</div>
         <div style="font-size: 0.75rem; color: #999;">${acc.email}</div>
       </div>
     </div>
@@ -1068,7 +1181,8 @@ function saveProfile(e) {
 
   const updatedUser = {
     ...currentUser,
-    name: document.getElementById('editName').value,
+    name: document.getElementById('editName').value.trim(),
+    username: document.getElementById('editName').value.trim(),
     phone: document.getElementById('editPhone').value,
     city: document.getElementById('editCity').value,
     bio: document.getElementById('editBio').value
@@ -1084,16 +1198,15 @@ function saveProfile(e) {
   }
 
   // Update in localStorage
-  const users = JSON.parse(localStorage.getItem('universe_users') || '[]');
-  const index = users.findIndex(u => u.id === currentUser.id);
+  const users = JSON.parse(localStorage.getItem('universe_users') || '[]').map(normalizeUser);
+  const index = users.findIndex(u => u.id === currentUser.id || u.email === currentUser.email);
   if (index > -1) {
-    users[index] = updatedUser;
-    localStorage.setItem('universe_users', JSON.stringify(users));
+    users[index] = normalizeUser(updatedUser);
+    persistUsers(users);
   }
 
-  currentUser = updatedUser;
-  localStorage.setItem('universe_currentUser', JSON.stringify(updatedUser));
-  loadAllAccounts();
+  currentUser = normalizeUser(updatedUser);
+  persistCurrentUser();
   updateUI();
 
   alert('✅ Профиль успешно обновлен!');
@@ -1269,15 +1382,16 @@ function addNewAccount(e) {
   const email = document.getElementById('newAccEmail').value.trim().toLowerCase();
   const password = document.getElementById('newAccPassword').value;
 
-  const users = JSON.parse(localStorage.getItem('universe_users') || '[]');
+  const users = JSON.parse(localStorage.getItem('universe_users') || '[]').map(normalizeUser);
   if (users.find(u => u.email === email)) {
     alert('❌ Email уже зарегистрирован');
     return;
   }
 
-  const newAccount = {
+  const newAccount = normalizeUser({
     id: Date.now(),
     name,
+    username: name,
     email,
     password,
     phone: '',
@@ -1285,10 +1399,10 @@ function addNewAccount(e) {
     city: '',
     createdAt: new Date().toISOString(),
     favorites: []
-  };
+  });
 
   users.push(newAccount);
-  localStorage.setItem('universe_users', JSON.stringify(users));
+  persistUsers(users);
 
   document.getElementById('addAccountSuccess').classList.add('show');
   setTimeout(() => {
@@ -1309,9 +1423,9 @@ function editAvatar() {
 function deleteAccount() {
   const confirm = prompt('⚠️ Введите "УДАЛИТЬ", чтобы подтвердить удаление аккаунта:');
   if (confirm === 'УДАЛИТЬ') {
-    const users = JSON.parse(localStorage.getItem('universe_users') || '[]');
+    const users = JSON.parse(localStorage.getItem('universe_users') || '[]').map(normalizeUser);
     const filtered = users.filter(u => u.id !== currentUser.id);
-    localStorage.setItem('universe_users', JSON.stringify(filtered));
+    persistUsers(filtered);
     localStorage.removeItem('universe_currentUser');
     window.location.href = 'index5.html';
   }
@@ -1331,28 +1445,49 @@ function toggleTheme() {
   const body = document.body;
   const toggle = document.getElementById('theme-toggle');
   const icon = toggle.querySelector('i');
+  const isDarkModeEnabled = !body.classList.contains('dark-theme');
 
-  body.classList.toggle('dark-theme');
+  body.classList.toggle('dark-theme', isDarkModeEnabled);
 
-  if (body.classList.contains('dark-theme')) {
+  if (isDarkModeEnabled) {
     icon.className = 'fas fa-sun';
     localStorage.setItem('universe_theme', 'dark');
   } else {
     icon.className = 'fas fa-moon';
     localStorage.setItem('universe_theme', 'light');
   }
+
+  if (currentUser) {
+    updateUserSettings({ darkMode: isDarkModeEnabled });
+  } else {
+    const darkModeCheckbox = document.getElementById('darkMode');
+    if (darkModeCheckbox) {
+      darkModeCheckbox.checked = isDarkModeEnabled;
+    }
+  }
 }
 
 function loadTheme() {
   const savedTheme = localStorage.getItem('universe_theme');
+  const storedUser = localStorage.getItem('universe_currentUser');
+  const parsedUser = storedUser ? normalizeUser(JSON.parse(storedUser)) : null;
+  const shouldUseDarkMode = parsedUser ? parsedUser.settings.darkMode : savedTheme === 'dark';
   const toggle = document.getElementById('theme-toggle');
   const icon = toggle.querySelector('i');
 
-  if (savedTheme === 'dark') {
+  if (shouldUseDarkMode) {
     document.body.classList.add('dark-theme');
     icon.className = 'fas fa-sun';
+    localStorage.setItem('universe_theme', 'dark');
   } else {
+    document.body.classList.remove('dark-theme');
     icon.className = 'fas fa-moon';
+    localStorage.setItem('universe_theme', 'light');
+  }
+
+  const darkModeCheckbox = document.getElementById('darkMode');
+  if (darkModeCheckbox) {
+    darkModeCheckbox.checked = shouldUseDarkMode;
   }
 }
 
@@ -1364,81 +1499,59 @@ async function togglePushNotifications() {
   const checkbox = document.getElementById('notifyPush');
 
   if (checkbox.checked) {
-    // Request permission and subscribe
-    if ('serviceWorker' in navigator && 'PushManager' in window) {
-      try {
-        const registration = await navigator.serviceWorker.ready;
-        const permission = await Notification.requestPermission();
-
-        if (permission === 'granted') {
-          const subscription = await registration.pushManager.subscribe({
-            userVisibleOnly: true,
-            applicationServerKey: urlBase64ToUint8Array('YOUR_VAPID_PUBLIC_KEY') // Replace with your VAPID key
-          });
-
-          // Send subscription to backend
-          await fetch('/api/auth/subscribe-push', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-              'Authorization': `Bearer ${localStorage.getItem('universe_accessToken')}`
-            },
-            body: JSON.stringify({ subscription })
-          });
-
-          showMessage('Push-уведомления включены!', 'success');
-        } else {
-          checkbox.checked = false;
-          showMessage('Разрешение на уведомления отклонено', 'error');
-        }
-      } catch (error) {
-        console.error('Push subscription failed:', error);
-        checkbox.checked = false;
-        showMessage('Ошибка при включении уведомлений', 'error');
-      }
-    } else {
+    if (!('Notification' in window)) {
       checkbox.checked = false;
       showMessage('Push-уведомления не поддерживаются в этом браузере', 'error');
+      return;
+    }
+
+    try {
+      const permission = Notification.permission === 'default'
+        ? await Notification.requestPermission()
+        : Notification.permission;
+
+      if (permission === 'granted') {
+        updateUserSettings({ notifyPush: true });
+        showMessage('Push-уведомления включены!', 'success');
+      } else {
+        checkbox.checked = false;
+        updateUserSettings({ notifyPush: false });
+        showMessage('Разрешение на уведомления отклонено', 'error');
+      }
+    } catch (error) {
+      console.error('Push subscription failed:', error);
+      checkbox.checked = false;
+      updateUserSettings({ notifyPush: false });
+      showMessage('Ошибка при включении уведомлений', 'error');
     }
   } else {
-    // Unsubscribe
-    try {
-      const registration = await navigator.serviceWorker.ready;
-      const subscription = await registration.pushManager.getSubscription();
-
-      if (subscription) {
-        await subscription.unsubscribe();
-
-        // Remove from backend
-        await fetch('/api/auth/unsubscribe-push', {
-          method: 'POST',
-          headers: {
-            'Authorization': `Bearer ${localStorage.getItem('universe_accessToken')}`
-          }
-        });
-      }
-
-      showMessage('Push-уведомления отключены', 'success');
-    } catch (error) {
-      console.error('Push unsubscribe failed:', error);
-      showMessage('Ошибка при отключении уведомлений', 'error');
-    }
+    updateUserSettings({ notifyPush: false });
+    showMessage('Push-уведомления отключены', 'success');
   }
 }
 
-function urlBase64ToUint8Array(base64String) {
-  const padding = '='.repeat((4 - base64String.length % 4) % 4);
-  const base64 = (base64String + padding)
-    .replace(/-/g, '+')
-    .replace(/_/g, '/');
+function toggleEmailNotifications() {
+  const checkbox = document.getElementById('notifyEmail');
+  updateUserSettings({ notifyEmail: checkbox.checked });
+  showMessage(checkbox.checked ? 'Email-подписка включена' : 'Email-подписка отключена', 'success');
+}
 
-  const rawData = window.atob(base64);
-  const outputArray = new Uint8Array(rawData.length);
+function toggleProfileVisibility() {
+  const checkbox = document.getElementById('showProfile');
+  updateUserSettings({ showProfile: checkbox.checked });
+  showMessage(checkbox.checked ? 'Профиль будет отображаться в поиске' : 'Профиль скрыт из поиска', 'success');
+}
 
-  for (let i = 0; i < rawData.length; ++i) {
-    outputArray[i] = rawData.charCodePointAt(i);
+function toggleDarkModeSetting() {
+  const checkbox = document.getElementById('darkMode');
+  const isDarkEnabled = document.body.classList.contains('dark-theme');
+
+  if (checkbox.checked !== isDarkEnabled) {
+    toggleTheme();
+    return;
   }
-  return outputArray;
+
+  updateUserSettings({ darkMode: checkbox.checked });
 }
 
 function showMessage(message, type) {
