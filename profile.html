@@ -956,7 +956,7 @@ const DEFAULT_SETTINGS = {
 function generateUserId(user = {}) {
   const source = `${user.email || ''}|${user.username || ''}|${user.name || ''}`.toLowerCase();
   if (!source.replace(/\|/g, '').trim()) {
-    return Date.now();
+    return Date.now() + Math.floor(Math.random() * 1000);
   }
 
   let hash = 0;
@@ -964,7 +964,7 @@ function generateUserId(user = {}) {
     hash = (hash * 31 + char.charCodeAt(0)) % 2147483647;
   }
 
-  return hash || Date.now();
+  return hash + 1;
 }
 
 function getUserDisplayName(user = {}) {
@@ -1076,7 +1076,14 @@ function loadUserData() {
   currentUser = normalizeUser(JSON.parse(user));
   const matchedUser = allAccounts.find(account => account.id === currentUser.id || account.email === currentUser.email);
   if (matchedUser) {
-    currentUser = matchedUser;
+    currentUser = normalizeUser({
+      ...matchedUser,
+      ...currentUser,
+      settings: {
+        ...(matchedUser.settings || DEFAULT_SETTINGS),
+        ...(currentUser.settings || DEFAULT_SETTINGS)
+      }
+    });
   }
   persistCurrentUser();
   updateUI();
@@ -1516,7 +1523,7 @@ async function togglePushNotifications() {
       } else {
         checkbox.checked = false;
         updateUserSettings({ notifyPush: false });
-        showMessage('Разрешение на уведомления отклонено', 'error');
+        showMessage('Разрешение на уведомления отклонено. Измените его в настройках браузера.', 'error');
       }
     } catch (error) {
       console.error('Push subscription failed:', error);
