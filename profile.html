@@ -1195,11 +1195,12 @@ function switchTab(tabName, tabElement) {
 
 function saveProfile(e) {
   e.preventDefault();
+  const updatedName = document.getElementById('editName').value.trim();
 
   const updatedUser = {
     ...currentUser,
-    name: document.getElementById('editName').value.trim(),
-    username: document.getElementById('editName').value.trim(),
+    name: updatedName,
+    username: updatedName,
     phone: document.getElementById('editPhone').value,
     city: document.getElementById('editCity').value,
     bio: document.getElementById('editBio').value
@@ -1510,9 +1511,7 @@ async function togglePushNotifications() {
     }
 
     try {
-      const permission = Notification.permission === 'default'
-        ? await Notification.requestPermission()
-        : Notification.permission;
+      const permission = await Notification.requestPermission();
 
       if (permission === 'granted') {
         updateUserSettings({ notifyPush: true });
