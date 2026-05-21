@@ -953,10 +953,20 @@ const DEFAULT_SETTINGS = {
   darkMode: false
 };
 
+function getRandomId() {
+  if (window.crypto && typeof window.crypto.getRandomValues === 'function') {
+    const values = new Uint32Array(1);
+    window.crypto.getRandomValues(values);
+    return values[0] || Date.now();
+  }
+
+  return Date.now() + Math.floor(Math.random() * 1000);
+}
+
 function generateUserId(user = {}) {
   const source = `${user.email || ''}|${user.username || ''}|${user.name || ''}`.toLowerCase();
   if (!source.replace(/\|/g, '').trim()) {
-    return Date.now() + Math.floor(Math.random() * 1000);
+    return getRandomId();
   }
 
   let hash = 0;
@@ -1448,11 +1458,10 @@ function goBack() {
 }
 
 // Theme Management
-function toggleTheme() {
+function applyTheme(isDarkModeEnabled, persistPreference = true) {
   const body = document.body;
   const toggle = document.getElementById('theme-toggle');
   const icon = toggle.querySelector('i');
-  const isDarkModeEnabled = !body.classList.contains('dark-theme');
 
   body.classList.toggle('dark-theme', isDarkModeEnabled);
 
@@ -1464,7 +1473,7 @@ function toggleTheme() {
     localStorage.setItem('universe_theme', 'light');
   }
 
-  if (currentUser) {
+  if (currentUser && persistPreference) {
     updateUserSettings({ darkMode: isDarkModeEnabled });
   } else {
     const darkModeCheckbox = document.getElementById('darkMode');
@@ -1474,28 +1483,16 @@ function toggleTheme() {
   }
 }
 
+function toggleTheme() {
+  applyTheme(!document.body.classList.contains('dark-theme'));
+}
+
 function loadTheme() {
   const savedTheme = localStorage.getItem('universe_theme');
   const storedUser = localStorage.getItem('universe_currentUser');
   const parsedUser = storedUser ? normalizeUser(JSON.parse(storedUser)) : null;
   const shouldUseDarkMode = parsedUser ? parsedUser.settings.darkMode : savedTheme === 'dark';
-  const toggle = document.getElementById('theme-toggle');
-  const icon = toggle.querySelector('i');
-
-  if (shouldUseDarkMode) {
-    document.body.classList.add('dark-theme');
-    icon.className = 'fas fa-sun';
-    localStorage.setItem('universe_theme', 'dark');
-  } else {
-    document.body.classList.remove('dark-theme');
-    icon.className = 'fas fa-moon';
-    localStorage.setItem('universe_theme', 'light');
-  }
-
-  const darkModeCheckbox = document.getElementById('darkMode');
-  if (darkModeCheckbox) {
-    darkModeCheckbox.checked = shouldUseDarkMode;
-  }
+  applyTheme(shouldUseDarkMode, false);
 }
 
 // Initialize theme on load
@@ -1551,14 +1548,7 @@ function toggleProfileVisibility() {
 
 function toggleDarkModeSetting() {
   const checkbox = document.getElementById('darkMode');
-  const isDarkEnabled = document.body.classList.contains('dark-theme');
-
-  if (checkbox.checked !== isDarkEnabled) {
-    toggleTheme();
-    return;
-  }
-
-  updateUserSettings({ darkMode: checkbox.checked });
+  applyTheme(checkbox.checked);
 }
 
 function showMessage(message, type) {
